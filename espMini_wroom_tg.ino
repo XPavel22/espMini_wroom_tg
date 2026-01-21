@@ -1,5 +1,5 @@
 /*
-  # Форматируем без изменения структуры
+  # Форматируем 
   prettier --print-width 120 --html-whitespace-sensitivity css --write compressed.html
   Далее сжатие gzip -k -9 index.html
   Перевод .gz в .h - % xxd -i index.html.gz > index_html_gz.h
@@ -18,11 +18,6 @@
   #endif
 */
 
-/*
-сериализацию разделить на части 
-в веб addNewRelay - починить
-*/
-
 #include "WiFiManager.h"
 #include "WebServer.h"
 #include "ConfigSettings.h"
@@ -32,21 +27,21 @@
 #include "Ota.h"
 #include "AppState.h"
 #include "Control.h"
-#include "Logger.h"    // Убедитесь, что Logger.h подключен
-#include "TelegramBot.h" // И TelegramBot.h
+#include "Logger.h"   
+#include "TelegramBot.h" 
 
 // --------------------------------
 
-// Определение пина для светодиода в зависимости от платформы
+
 #if defined(ESP8266)
 // Для ESP-01 и других ESP8266 плат
 #if defined(ARDUINO_ESP8266_ESP01) || defined(ESP01)
 #define LED_PIN 2  // GPIO2 для ESP-01 (синий светодиод)
 #else
-#define LED_PIN 2  // По умолчанию для большинства ESP8266
+#define LED_PIN 2  // По умолчанию для ESP8266
 #endif
 #elif defined(ESP32)
-// Для ESP32-S2 и других ESP32 вариаций
+// Для ESP32-S2 и других ESP32 
 #if defined(CONFIG_IDF_TARGET_ESP32S2) || defined(ARDUINO_ESP32S2_DEV)
 #define LED_PIN 15 // GPIO15 для ESP32-S2
 #else
@@ -54,15 +49,14 @@
 #endif
 #endif
 
-// --- ГЛОБАЛЬНЫЕ ОБЪЕКТЫ ---
 AppState appState;
 Settings settings(appState);
 Info sysInfo;
 TimeModule timeModule(appState);
 Ota ota(settings, appState);
 DeviceManager deviceManager(appState);
-Logger logger; // 1. Сначала объявляем logger
-Control control(deviceManager, logger); // 2. Теперь можно передать его в Control
+Logger logger; 
+Control control(deviceManager, logger); 
 WiFiManager wifiManager(settings, timeModule, appState);
 WebServer webServer(settings, deviceManager, appState, timeModule, sysInfo, ota);
 TelegramBot telegramBot(settings, webServer, logger, appState, ota, sysInfo, deviceManager);
@@ -88,13 +82,6 @@ void setup() {
     }
 
     Serial.printf("Free heap after LoadSettings: %d\n", ESP.getFreeHeap());
-
-    // --- ИНИЦИАЛИЗАЦИЯ ЛОГЕРА ---
-    // Загружаем предыдущие логи из файла
-    //logger.loadLogsFromSPIFFS();
-    // Добавляем сообщение о старте системы
-   // logger.addLog("System started", LOG_INFO);
-    // --------------------------------
 
     deviceManager.deviceInit();
 
@@ -138,7 +125,6 @@ void setup() {
         webServer.begin();
         Serial.printf("Free heap after web server: %d\n", ESP.getFreeHeap());
         
-        // --- ИНИЦИАЛИЗАЦИЯ ТЕЛЕГРАМ-БОТА ---
         // Запускаем бота после инициализации веб-сервера и WiFi
         //telegramBot.begin();
         //logger.addLog("Telegram Bot started", LOG_INFO);
@@ -168,7 +154,7 @@ void loop() {
             appState.isSaveControlRequest = false;
             saveTimer = 0;
             Serial.println("Сохранение выполнено");
-            logger.addLog("Device settings saved", LOG_INFO); // Логируем сохранение
+            logger.addLog("Device settings saved", LOG_INFO); 
         }
     }
 
@@ -176,7 +162,7 @@ void loop() {
         delay(10);
         settings.saveSettings();
         appState.isSaveWifiRequest = false;
-        logger.addLog("WiFi settings saved", LOG_INFO); // Логируем сохранение
+        logger.addLog("WiFi settings saved", LOG_INFO); 
     }
 
     ota.loop();
